@@ -8,11 +8,11 @@
 
 1. It will use the exif data to determine which album to map the picture to.
 
-* If no correct album exists, it will create one in the database.
+    * If no correct album exists, it will create one in the database.
 
 1. It will rename the .jpgs with UUIDs (since that will be the URL identifier): [uuid].jpg.
 
-1. I will extract each images thumbnail and name it with the matching UUID: [uuid]_thumb.jpg.
+1. It will extract each images thumbnail and name it with the matching UUID: [uuid]_thumb.jpg.
 
 1. It will load the database with the images names, album id, and other metadata.
 
