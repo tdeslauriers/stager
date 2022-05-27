@@ -8,10 +8,10 @@ import (
 )
 
 var (
-	user = os.Getenv("GALLERY_TESTDB_GO_USER")
-	pass = os.Getenv("GALLERY_TESTDB_GO_PASSWORD")
-	dbIP = os.Getenv("GALLERY_TESTDB_GO_IP")
-	name = os.Getenv("GALLERY_TESTDB_GO_DBNAME")
+	user = os.Getenv("STAGER_USERNAME")
+	pass = os.Getenv("STAGER_PASSWORD")
+	dbIP = os.Getenv("STAGER_IP")
+	name = os.Getenv("STAGER_DBNAME")
 )
 
 var url = fmt.Sprintf("%s:%s@tcp(%s)/%s?parseTime=true", user, pass, dbIP, name)
