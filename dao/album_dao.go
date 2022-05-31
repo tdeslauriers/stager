@@ -1,11 +1,13 @@
 package dao
 
 import (
-	"fmt"
 	"log"
-
-	"github.com/tdeslauriers/stager/model"
 )
+
+type Album struct {
+	ID    int64
+	Album string
+}
 
 // ObtainAlbumID used to lookup/create album foreign key for Pic
 func ObtainAlbumID(name string) (id int64) {
@@ -18,12 +20,12 @@ func ObtainAlbumID(name string) (id int64) {
 		return
 	}
 
-	a := model.Album{Album: name}
+	a := Album{Album: name}
 	id, _ = createAlbum(a)
 	return
 }
 
-func createAlbum(album model.Album) (id int64, errSQL error) {
+func createAlbum(album Album) (id int64, errSQL error) {
 
 	db := DBConn()
 	defer db.Close()
@@ -44,13 +46,13 @@ func createAlbum(album model.Album) (id int64, errSQL error) {
 		log.Fatal(errID)
 	}
 
-	fmt.Printf("Created record id: %d\n", id)
+	log.Printf("Created record id: %d\n", id)
 	db.Close()
 
 	return id, errSQL
 }
 
-func findAlbumByName(name string) (a model.Album) {
+func findAlbumByName(name string) (a Album) {
 
 	db := DBConn()
 	defer db.Close()

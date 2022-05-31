@@ -6,16 +6,19 @@
 
 1. It will read the files and gather their exif data.
 
+1. It will compare hash of image to db image hashes to prevent duplication
+
 1. It will use the exif data to determine which album to map the picture to.
 
     * If no correct album exists, it will create one in the database.
 
 1. It will rename the .jpgs with UUIDs (since that will be the URL identifier): [uuid].jpg.
 
-1. It will extract each images thumbnail and name it with the matching UUID: [uuid]_thumb.jpg.
+1. It will extract each images thumbnail.
 
-1. It will load the database with the images names, album id, and other metadata.
+1. It will load the database with the image , thumbnail, name, and other metadata.
 
-1. It will sftp the files to the server directory that hosts the images for the site.
+### Notes:
+* *Files will not be published/visible on the site without adminsitrative action on the site itself to prevent mistakes and mischeif.*
 
-*Note: files will not be published/visible on the site without adminsitrative action on the site itself to prevent mistakes and mischeif.*
+* *There are easier/faster ways to prevent duplication than hashing, but I wanted to give it a whirl.*

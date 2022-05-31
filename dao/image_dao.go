@@ -1,13 +1,25 @@
 package dao
 
 import (
-	"fmt"
 	"log"
+	"time"
 
-	"github.com/tdeslauriers/stager/model"
+	"github.com/google/uuid"
 )
 
-func FindImageById(id int64) (p model.Pic) {
+// image table has more fields (title, desc)
+type Photo struct {
+	ID        int64
+	Filename  uuid.UUID
+	Date      time.Time
+	Published bool
+	Thumbnail []byte
+	Photo     []byte
+}
+
+type Photos []Photo
+
+func FindImageById(id int64) (p Photo) {
 
 	db := DBConn()
 	defer db.Close()
@@ -20,18 +32,18 @@ func FindImageById(id int64) (p model.Pic) {
 	return p
 }
 
-func CreateImage(pic model.Pic) (id int64, errSQL error) {
+func InsertImage(p Photo) (id int64, errSQL error) {
 
 	db := DBConn()
 	defer db.Close()
 
-	query := "INSERT INTO image (filename, date, published, album_id) VALUES (UUID_TO_BIN(?), ?, ?, ?);"
+	query := "INSERT INTO image (filename, date, published, thumbnail, image) VALUES (UUID_TO_BIN(?), ?, ?, ?, ?);"
 	stmt, err := db.Prepare(query)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	r, errSQL := stmt.Exec(pic.Filename, pic.Date, pic.Published, pic.AlbumID)
+	r, errSQL := stmt.Exec(p.Filename, p.Date, p.Published, p.Thumbnail, p.Photo)
 	if errSQL != nil {
 		log.Fatal(errSQL)
 	}
@@ -41,7 +53,7 @@ func CreateImage(pic model.Pic) (id int64, errSQL error) {
 		log.Fatal(errID)
 	}
 
-	fmt.Printf("Created record id: %d\n", id)
+	log.Printf("Created photo-record id: %d\n", id)
 	db.Close()
 
 	return id, errSQL
