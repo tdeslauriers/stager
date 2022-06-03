@@ -21,11 +21,13 @@ func ObtainAlbumID(name string) (id int64) {
 	}
 
 	a := Album{Album: name}
-	id, _ = createAlbum(a)
+	id, _ = InsertAlbum(a)
+
+	db.Close()
 	return
 }
 
-func createAlbum(album Album) (id int64, errSQL error) {
+func InsertAlbum(album Album) (id int64, errSQL error) {
 
 	db := DBConn()
 	defer db.Close()
@@ -61,5 +63,6 @@ func findAlbumByName(name string) (a Album) {
 	row := db.QueryRow(query, name)
 	row.Scan(&a.ID, &a.Album)
 
+	db.Close()
 	return a
 }

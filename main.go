@@ -1,25 +1,20 @@
 package main
 
 import (
-	"bytes"
-	"image"
-	"image/jpeg"
+	"fmt"
 	"io/ioutil"
 	"log"
-	"os"
 	"strconv"
+	"time"
 
-	"github.com/google/uuid"
-	"github.com/rwcarlsen/goexif/exif"
-	"github.com/tdeslauriers/stager/dao"
-	"github.com/tdeslauriers/stager/model"
-
+	"github.com/barasher/go-exiftool"
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/tdeslauriers/stager/dao"
 )
 
 func main() {
 
-	dir := "/home/tombomb/Pictures/test/source/"
+	dir := "/home/tombomb/Pictures/stage/"
 	files, err := ioutil.ReadDir(dir)
 	if err != nil {
 		log.Fatal(err)
@@ -27,60 +22,39 @@ func main() {
 
 	// rename images, create thumbnails, and create db entries
 	// need to test for nil
-	imgs := make(model.Pics, 0, 100)
+	imgs := make(dao.Photos, 0, 100)
 	for _, f := range files {
 
-		// read in data
-		p, err := os.Open(dir + f.Name())
+		// get imaged created date from exif
+		et, err := exiftool.NewExiftool()
 		if err != nil {
-			log.Panicf("Could not open file: %s.\n%v", f.Name(), err)
+			log.Fatalf("Error when intializing: %v\n", err)
+		}
+		defer et.Close()
+
+		var date time.Time
+		metadata := et.ExtractMetadata(dir + f.Name())
+		for _, datem := range metadata {
+			if datem.Err != nil {
+				log.Fatalf("Error reading metadata in %v: %v\n", datem.File, datem.Err)
+			}
+			for k, v := range datem.Fields {
+				if k == "DateTimeOriginal" {
+					dto, _ := time.Parse("2006:01:02 15:04:05", fmt.Sprint(v))
+					date = dto
+				}
+			}
 		}
 
-		x, err := exif.Decode(p)
-		if err != nil {
-			log.Panicf("Could not decode image: %s.\n%v", f.Name(), err)
-		}
-
-		// data model
-		date, _ := x.DateTime()
 		year := strconv.Itoa(date.Year())
 
-		pic := model.Pic{Filename: uuid.New(), Date: date, Published: false}
-		pic.AlbumID = dao.ObtainAlbumID(year)
-		imgs = append(imgs, pic)
+		// create image + album records
 
-		// rename files
-		err = os.Rename(dir+f.Name(), dir+pic.Filename.String()+".jpg")
-		if err != nil {
-			panic(err)
-		}
+		// insert into db
 
-		tmb, _ := x.JpegThumbnail()
-		thumb := dir + pic.Filename.String() + "_thumb.jpg"
-		makeThumb(tmb, thumb)
+		// rename files and move to backup dir
+		// only if db insert successful
 
-		// DAO: only add record to db after rename successful.
-		dao.CreateImage(pic)
 	}
 
-	//scp images to new web directory
-
-}
-
-func makeThumb(thumbRaw []byte, name string) {
-
-	thumb, _, err := image.Decode(bytes.NewReader(thumbRaw))
-	if err != nil {
-		panic(err)
-	}
-
-	out, _ := os.Create(name)
-	defer out.Close()
-
-	var opts jpeg.Options
-	opts.Quality = 30
-
-	err = jpeg.Encode(out, thumb, &opts)
-
-	out.Close()
 }

@@ -14,7 +14,11 @@
 
 1. It will rename the .jpgs with UUIDs (since that will be the URL identifier): [uuid].jpg.
 
-1. It will extract each images thumbnail.
+1. ~~It will extract each image's thumbnail from exif data.~~
+    
+    * Not all pictures have exif data; not all exif has thumbnails/sometimes it is corrupted; not all Thumbnails preserve correct image rotation. **Too manual.**
+
+    * Makes more sense to *this usecase* to generate thumbnails by resizing the original image.
 
 1. It will load the database with the image , thumbnail, name, and other metadata.
 

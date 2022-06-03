@@ -12,6 +12,7 @@ require (
 )
 
 require (
+	github.com/barasher/go-exiftool v1.7.0 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/kr/fs v0.1.0 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
