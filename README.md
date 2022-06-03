@@ -26,3 +26,5 @@
 * *Files will not be published/visible on the site without adminsitrative action on the site itself to prevent mistakes and mischeif.*
 
 * *There are easier/faster ways to prevent duplication than hashing, but I wanted to give it a whirl.*
+
+* *go-exiftool is a wrapper for a perl program exiftool which must be installed on the machine.*
