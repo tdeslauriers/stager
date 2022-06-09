@@ -28,3 +28,5 @@
 * *There are easier/faster ways to prevent duplication than hashing, but I wanted to give it a whirl.*
 
 * *go-exiftool is a wrapper for a perl program exiftool which must be installed on the machine.*
+
+* *golang's image/jpeg decoding/encoding does **NOT** preserve exif data.*

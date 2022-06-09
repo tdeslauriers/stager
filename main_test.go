@@ -39,6 +39,10 @@ func TestReadExif(t *testing.T) {
 				t.Logf("Converted DateTimeOriginal to time.Time: %v", createDate)
 
 			}
+			if k == "Orientation" {
+				orientation := fmt.Sprint(v)
+				t.Logf("Orientation: %s", orientation)
+			}
 		}
 	}
 
