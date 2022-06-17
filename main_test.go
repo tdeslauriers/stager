@@ -2,10 +2,14 @@ package main
 
 import (
 	"fmt"
+	"image"
+	"image/jpeg"
+	"os"
 	"testing"
 	"time"
 
 	"github.com/barasher/go-exiftool"
+	"github.com/disintegration/imaging"
 )
 
 // needs to extract thumbnail if present
@@ -46,4 +50,34 @@ func TestReadExif(t *testing.T) {
 		}
 	}
 
+}
+
+const pic = "/home/atomic/Pictures/stage/test1.jpg"
+
+// poc resize
+func TestResize(t *testing.T) {
+
+	p, err := os.Open(pic)
+	if err != nil {
+		t.Log(err)
+	}
+	defer p.Close()
+
+	img, _, err := image.Decode(p)
+	if err != nil {
+		t.Log(err)
+	}
+
+	thumb := imaging.Resize(img, 0, 200, imaging.Linear)
+
+	n, err := os.Create("/home/atomic/Pictures/stage/thumb.jpg")
+	if err != nil {
+		t.Log(err)
+	}
+
+	opt := jpeg.Options{
+		Quality: 90,
+	}
+
+	jpeg.Encode(n, thumb, &opt)
 }

@@ -1,14 +1,20 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
+	"image"
+	"image/jpeg"
 	"io/ioutil"
 	"log"
+	"os"
 	"strconv"
 	"time"
 
 	"github.com/barasher/go-exiftool"
+	"github.com/disintegration/imaging"
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/google/uuid"
 	"github.com/tdeslauriers/stager/dao"
 )
 
@@ -31,7 +37,7 @@ func main() {
 		defer et.Close()
 
 		var date time.Time
-		var orientation string
+		// var orientation string
 		metadata := et.ExtractMetadata(dir + f.Name())
 		for _, datem := range metadata {
 			if datem.Err != nil {
@@ -42,7 +48,7 @@ func main() {
 					date, _ = time.Parse("2006:01:02 15:04:05", fmt.Sprint(v))
 				}
 				if k == "Orientation" {
-					orientation = fmt.Sprint(v)
+					// orientation = fmt.Sprint(v)
 				}
 			}
 		}
@@ -51,6 +57,39 @@ func main() {
 		albumId := dao.ObtainAlbumID(strconv.Itoa(date.Year()))
 
 		// create image record
+		p, err := os.Open(dir + f.Name())
+		if err != nil {
+			log.Fatal(err)
+		}
+		defer p.Close()
+
+		img, _, err := image.Decode(p)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		opt := jpeg.Options{
+			Quality: 90,
+		}
+
+		// create thumb; convert to bytes
+		thumb := imaging.Resize(img, 0, 200, imaging.Linear)
+		tbuf := new(bytes.Buffer)
+		err = jpeg.Encode(tbuf, thumb, &opt)
+		dbThumb := tbuf.Bytes()
+
+		// photo to bytes
+		buf := new(bytes.Buffer)
+		err = jpeg.Encode(buf, img, &opt)
+		dbPhoto := buf.Bytes()
+
+		photo := dao.Photo{
+			Filename:  uuid.New(),
+			Date:      date,
+			Published: false,
+			Thumbnail: dbThumb,
+			Photo:     dbPhoto,
+		}
 
 		// insert into db
 

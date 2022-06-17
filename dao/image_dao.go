@@ -3,14 +3,12 @@ package dao
 import (
 	"log"
 	"time"
-
-	"github.com/google/uuid"
 )
 
 // image table has more fields (title, desc)
 type Photo struct {
 	ID        int64
-	Filename  uuid.UUID
+	Filename  string
 	Date      time.Time
 	Published bool
 	Thumbnail []byte
@@ -37,7 +35,7 @@ func InsertImage(p Photo) (id int64, errSQL error) {
 	db := DBConn()
 	defer db.Close()
 
-	query := "INSERT INTO image (filename, date, published, thumbnail, image) VALUES (UUID_TO_BIN(?), ?, ?, ?, ?);"
+	query := "INSERT INTO image (filename, date, published, thumbnail, image) VALUES (?, ?, ?, ?, ?);"
 	stmt, err := db.Prepare(query)
 	if err != nil {
 		log.Fatal(err)
