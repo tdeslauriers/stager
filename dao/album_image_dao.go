@@ -8,7 +8,7 @@ type AlbumImage struct {
 	PhotoID int64
 }
 
-func InsertAlbumImage(a int64, i int64) (id int64, errSQL error) {
+func InsertAlbumImage(ai AlbumImage) (id int64, errSQL error) {
 
 	db := DBConn()
 	defer db.Close()
@@ -19,7 +19,7 @@ func InsertAlbumImage(a int64, i int64) (id int64, errSQL error) {
 		log.Fatal(err)
 	}
 
-	r, errSQL := s.Exec(a, i)
+	r, errSQL := s.Exec(ai.AlbumID, ai.PhotoID)
 	if errSQL != nil {
 		log.Fatal(errSQL)
 	}
@@ -29,7 +29,7 @@ func InsertAlbumImage(a int64, i int64) (id int64, errSQL error) {
 		log.Fatal(errID)
 	}
 
-	log.Printf("Created xref record: %d, associating album %d with image %d.", id, a, i)
+	log.Printf("Inserted xref record: %d, associating album %d with image %d.", id, ai.AlbumID, ai.PhotoID)
 	db.Close()
 
 	return id, errSQL

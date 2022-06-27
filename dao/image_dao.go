@@ -17,19 +17,6 @@ type Photo struct {
 
 type Photos []Photo
 
-func FindImageById(id int64) (p Photo) {
-
-	db := DBConn()
-	defer db.Close()
-
-	query := "SELECT id, date, BIN_TO_UUID(filename) FROM image WHERE id = ?;"
-	row := db.QueryRow(query, id)
-
-	row.Scan(&p.ID, &p.Date, &p.Filename)
-
-	return p
-}
-
 func InsertImage(p Photo) (id int64, errSQL error) {
 
 	db := DBConn()
@@ -51,7 +38,7 @@ func InsertImage(p Photo) (id int64, errSQL error) {
 		log.Fatal(errID)
 	}
 
-	log.Printf("Created photo-record id: %d\n", id)
+	log.Printf("Inserted photo-record; id: %d\n", id)
 	db.Close()
 
 	return id, errSQL

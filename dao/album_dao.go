@@ -17,11 +17,15 @@ func ObtainAlbumID(name string) (id int64) {
 
 	if a := findAlbumByName(name); a.ID != 0 {
 		id = a.ID
+		log.Printf("Existing record: obtained Album Id: %d.", id)
 		return
 	}
 
 	a := Album{Album: name}
-	id, _ = InsertAlbum(a)
+	id, err := InsertAlbum(a)
+	if err != nil {
+		log.Fatalf("Unable to insert album('%s') into database: %v", a.Album, err)
+	}
 
 	db.Close()
 	return
@@ -48,7 +52,7 @@ func InsertAlbum(album Album) (id int64, errSQL error) {
 		log.Fatal(errID)
 	}
 
-	log.Printf("Created record id: %d\n", id)
+	log.Printf("Inserted new album record; id: %d\n", id)
 	db.Close()
 
 	return id, errSQL

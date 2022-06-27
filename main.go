@@ -84,14 +84,24 @@ func main() {
 		dbPhoto := buf.Bytes()
 
 		photo := dao.Photo{
-			Filename:  uuid.New(),
+			Filename:  uuid.NewString(),
 			Date:      date,
 			Published: false,
 			Thumbnail: dbThumb,
 			Photo:     dbPhoto,
 		}
 
-		// insert into db
+		// insert photo record into db; associate with album
+		imageId, err := dao.InsertImage(photo)
+		if err != nil {
+			log.Fatalln(err)
+		}
+
+		xref := dao.AlbumImage{AlbumID: albumId, PhotoID: imageId}
+		_, err = dao.InsertAlbumImage(xref)
+		if err != nil {
+			log.Fatal(err)
+		}
 
 		// rename files and move to backup dir
 		// only if db insert successful
