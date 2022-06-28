@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"image"
 	"image/jpeg"
-	"io/ioutil"
 	"log"
 	"os"
 	"strconv"
@@ -18,10 +17,14 @@ import (
 	"github.com/tdeslauriers/stager/dao"
 )
 
+var (
+	dir    = os.Getenv("STAGER_DIR")
+	backup = os.Getenv("STAGER_BACKUP")
+)
+
 func main() {
 
-	dir := "/home/atomic/Pictures/stage/"
-	files, err := ioutil.ReadDir(dir)
+	files, err := os.ReadDir(dir)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -104,7 +107,10 @@ func main() {
 		}
 
 		// rename files and move to backup dir
-		// only if db insert successful
+		err = os.Rename(dir+f.Name(), backup+photo.Filename+".jpg")
+		if err != nil {
+			log.Fatalf("Unable to move %s --> %s", f.Name(), photo.Filename+".jpg")
+		}
 
 	}
 
