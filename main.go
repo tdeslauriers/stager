@@ -48,7 +48,7 @@ func main() {
 			}
 			for k, v := range datem.Fields {
 				if k == "DateTimeOriginal" {
-					date, _ = time.Parse("2006:01:02 15:04:05", fmt.Sprint(v))
+					date, err = time.Parse("2006:01:02 15:04:05", fmt.Sprint(v))
 				}
 				if k == "Orientation" {
 					// orientation = fmt.Sprint(v)
