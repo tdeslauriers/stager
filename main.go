@@ -81,6 +81,12 @@ func main() {
 		err = jpeg.Encode(tbuf, thumb, &opt)
 		dbThumb := tbuf.Bytes()
 
+		// create presentation view reduced size
+		pres := imaging.Resize(img, 0, 800, imaging.Linear)
+		pbuf := new(bytes.Buffer)
+		err = jpeg.Encode(pbuf, pres, &opt)
+		dbPres := pbuf.Bytes()
+
 		// photo to bytes
 		buf := new(bytes.Buffer)
 		err = jpeg.Encode(buf, img, &opt)
@@ -91,6 +97,7 @@ func main() {
 			Date:      date,
 			Published: false,
 			Thumbnail: dbThumb,
+			Presentation: dbPres,
 			Photo:     dbPhoto,
 		}
 

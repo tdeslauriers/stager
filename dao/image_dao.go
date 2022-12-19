@@ -7,12 +7,13 @@ import (
 
 // image table has more fields (title, desc)
 type Photo struct {
-	ID        int64
-	Filename  string
-	Date      time.Time
-	Published bool
-	Thumbnail []byte
-	Photo     []byte
+	ID           int64
+	Filename     string
+	Date         time.Time
+	Published    bool
+	Thumbnail    []byte
+	Presentation []byte
+	Photo        []byte
 }
 
 type Photos []Photo
@@ -22,13 +23,13 @@ func InsertImage(p Photo) (id int64, errSQL error) {
 	db := DBConn()
 	defer db.Close()
 
-	query := "INSERT INTO image (filename, date, published, thumbnail, image) VALUES (?, ?, ?, ?, ?);"
+	query := "INSERT INTO image (filename, date, published, thumbnail, presentation, image) VALUES (?, ?, ?, ?, ?, ?);"
 	stmt, err := db.Prepare(query)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	r, errSQL := stmt.Exec(p.Filename, p.Date, p.Published, p.Thumbnail, p.Photo)
+	r, errSQL := stmt.Exec(p.Filename, p.Date, p.Published, p.Thumbnail, p.Presentation, p.Photo)
 	if errSQL != nil {
 		log.Fatal(errSQL)
 	}

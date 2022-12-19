@@ -75,9 +75,16 @@ func TestResize(t *testing.T) {
 		t.Log(err)
 	}
 
+	pres := imaging.Resize(img, 0, 800, imaging.Linear)
+	pz, err := os.Create("/home/atomic/Pictures/stage/pres.jpg")
+	if err != nil {
+		t.Log(err)
+	}
+
 	opt := jpeg.Options{
 		Quality: 90,
 	}
 
 	jpeg.Encode(n, thumb, &opt)
+	jpeg.Encode(pz, pres, &opt)
 }
